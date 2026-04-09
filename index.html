@@ -1,63 +1,94 @@
-
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workload Dashboard</title>
 <style>
+:root {
+  /* Pastel Palette */
+  --bg-main: #FDFCFB;
+  --bg-card: #FFFFFF;
+  --border-color: #F0E9E5;
+  --color-border-tertiary: #F0E9E5;
+  --color-border-secondary: #E0D9D5;
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F8F9FA;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  /* Status Colors (Pastel) */
+  --ps-blue: #E3F2FD;
+  --ps-blue-txt: #4A90E2;
+}
+
 *{box-sizing:border-box;margin:0;padding:0;}
-.wrap{padding:1rem 0;font-family:var(--font-sans);}
-.tabs{display:flex;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-secondary);margin-bottom:16px;}
-.tab{flex:1;padding:8px 0;font-size:12px;font-weight:500;text-align:center;cursor:pointer;color:var(--color-text-secondary);border:none;background:none;}
-.tab.on{background:var(--color-background-primary);color:var(--color-text-primary);border-bottom:2px solid #378ADD;}
+body { background-color: var(--bg-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+.wrap{padding:1rem; max-width: 1200px; margin: 0 auto;}
+.tabs{display:flex;border:1px solid var(--border-color);border-radius:var(--border-radius-lg);overflow:hidden;background:#fff;margin-bottom:16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+.tab{flex:1;padding:12px 0;font-size:13px;font-weight:600;text-align:center;cursor:pointer;color:#A0A0A0;border:none;background:none;transition: 0.3s;}
+.tab.on{background: var(--ps-blue); color: var(--ps-blue-txt); border-bottom: 3px solid var(--ps-blue-txt);}
 .pnl{display:none;}.pnl.on{display:block;}
-.card{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:14px;}
-.sect-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.sect-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;}
+
+.card{background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding:1.25rem; margin-bottom:14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);}
+.sect-title{font-size:13px;font-weight:600;color:var(--color-text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.sect-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:8px;}
 .qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:8px;}
-.qc{border-radius:var(--border-radius-lg);border:.5px solid var(--color-border-tertiary);overflow:hidden;background:var(--color-background-primary);}
+.qc{border-radius: 12px;border:1px solid var(--border-color);overflow:hidden;background:var(--bg-card);box-shadow: 0 2px 6px rgba(0,0,0,0.02);}
 .qc.done-card{opacity:0.6;}
-.qh{padding:9px 12px;display:flex;justify-content:space-between;align-items:center;}
-.qhname{font-size:13px;font-weight:500;}
-.qbadge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:8px;}
+.qh{padding:9px 12px;display:flex;justify-content:space-between;align-items:center; border-radius: 12px 12px 0 0;}
+.qhname{font-size:13px;font-weight:600;}
+.qbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;}
 .qbody{padding:0 12px 8px;}
-.qi{font-size:11px;padding:5px 0;border-bottom:.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px;}
+.qi{font-size:11px;padding:5px 0;border-bottom:.5px solid var(--border-color);display:flex;align-items:center;gap:6px;}
 .qi:last-child{border-bottom:none;}
 .qi.done-item{opacity:0.55;}
 .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .qiname{flex:1;color:var(--color-text-primary);}
-.stag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;white-space:nowrap;display:inline-block;}
-.toggle-done{font-size:11px;color:var(--color-text-tertiary);cursor:pointer;padding:6px 0;text-align:center;border-top:.5px solid var(--color-border-tertiary);margin-top:4px;}
-.toggle-done:hover{color:var(--color-text-secondary);}
-.done-section{margin-top:16px;}
-.done-collapse{display:none;}
-.done-collapse.open{display:block;}
+.stag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap;display:inline-block;}
+
 .divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;}
-.divider-line{flex:1;height:.5px;background:var(--color-border-tertiary);}
+.divider-line{flex:1;height:.5px;background:var(--border-color);}
 .divider-label{font-size:11px;color:var(--color-text-tertiary);white-space:nowrap;}
+.done-collapse{display:none;}.done-collapse.open{display:block;}
+
 .lbrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .lbl{font-size:12px;width:90px;flex-shrink:0;}
 .lbt{flex:1;height:24px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden;}
-.lbf{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:500;}
-.lbp{font-size:11px;width:36px;text-align:right;flex-shrink:0;font-weight:500;}
+.lbf{height:100%;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:600;}
+.lbp{font-size:11px;width:36px;text-align:right;flex-shrink:0;font-weight:600;}
+
 .frow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
-.fb{font-size:11px;padding:3px 10px;border-radius:10px;border:.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;}
-.fb.on{background:#E6F1FB;color:#185FA5;border-color:#85B7EB;}
+.fb{font-size:11px;padding:4px 12px;border-radius:12px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer; font-weight: 500;}
+.fb.on{background:var(--ps-blue);color:var(--ps-blue-txt);border-color:#BBDEFB;}
+
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:12px;}
-th{font-size:11px;font-weight:500;color:var(--color-text-secondary);padding:0 6px 8px;text-align:left;border-bottom:.5px solid var(--color-border-tertiary);white-space:nowrap;}
-tbody tr{border-bottom:.5px solid var(--color-border-tertiary);}
+th{font-size:11px;font-weight:600;color:var(--color-text-secondary);padding:0 6px 8px;text-align:left;border-bottom:.5px solid var(--border-color);white-space:nowrap;}
+tbody tr{border-bottom:.5px solid var(--border-color);}
 tbody tr:last-child{border-bottom:none;}
 tbody tr.done-row td{opacity:0.5;}
-td{padding:6px;vertical-align:middle;}
-.chips{display:flex;flex-wrap:wrap;gap:3px;}
-.cpb{font-size:10px;padding:1px 6px;border-radius:8px;background:#E6F1FB;color:#185FA5;border:.5px solid #85B7EB;}
-.cpg{font-size:10px;padding:1px 6px;border-radius:8px;background:#E1F5EE;color:#0F6E56;border:.5px solid #5DCAA5;}
-select,input[type=text]{font-size:11px;padding:3px 6px;border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
+td{padding:8px 6px;vertical-align:middle;}
+.chips{display:flex;flex-wrap:wrap;gap:4px;}
+.cpb{font-size:10px;padding:2px 8px;border-radius:8px;background:#E3F2FD;color:#1976D2;}
+.cpg{font-size:10px;padding:2px 8px;border-radius:8px;background:#E8F5E9;color:#2E7D32;}
+
+select,input[type=text]{font-size:11px;padding:4px 8px;border:1px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:#fff;color:var(--color-text-primary);}
 input[type=text]{width:100%;}
-.btnadd{background:#E6F1FB;color:#185FA5;border:.5px solid #85B7EB;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;padding:5px 12px;cursor:pointer;white-space:nowrap;}
-.btndel{background:none;border:none;cursor:pointer;color:#A32D2D;font-size:15px;padding:0 3px;line-height:1;}
-.addrow{display:grid;grid-template-columns:2fr 70px 90px 90px 80px 110px auto;gap:5px;align-items:center;padding-top:12px;margin-top:12px;border-top:.5px solid var(--color-border-tertiary);}
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
-.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .75rem;text-align:center;}
-.stat-label{font-size:10px;color:var(--color-text-secondary);margin-bottom:3px;}
-.stat-val{font-size:18px;font-weight:500;color:var(--color-text-primary);}
+.btnadd{background:var(--ps-blue);color:var(--ps-blue-txt);border:1px solid #BBDEFB;border-radius:var(--border-radius-md);font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer;white-space:nowrap;}
+.btndel{background:none;border:none;cursor:pointer;color:#EF5350;font-size:16px;padding:0 3px;line-height:1;}
+.addrow{display:grid;grid-template-columns:2fr 70px 90px 90px 80px 110px auto;gap:5px;align-items:center;padding-top:12px;margin-top:12px;border-top:1px solid var(--border-color);}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.stat{background:var(--bg-card);border:1px solid var(--border-color); border-radius:var(--border-radius-lg);padding:.8rem;text-align:center;box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+.stat-label{font-size:11px;font-weight:600;color:var(--color-text-secondary);margin-bottom:4px;}
+.stat-val{font-size:20px;font-weight:600;color:var(--color-text-primary);}
 </style>
+</head>
+<body>
 
 <div class="wrap">
 <div class="tabs">
@@ -67,10 +98,12 @@ input[type=text]{width:100%;}
 </div>
 
 <div id="pq" class="pnl on">
-  <div class="stat-row" id="sumstat"></div>
+  <div class="stat-row" id="sumstat">
+    <div style="grid-column: span 4; text-align: center; padding: 20px; color: #999;">กำลังดึงข้อมูลจาก Google Sheets...</div>
+  </div>
   <div class="sect-title">
     คิวช่าง — งานที่ยังดำเนินการอยู่
-    <span class="sect-badge" style="background:#E6F1FB;color:#185FA5;" id="tech-active-count"></span>
+    <span class="sect-badge" style="background:#E3F2FD;color:#4A90E2;" id="tech-active-count"></span>
   </div>
   <div class="qgrid" id="tq"></div>
 
@@ -78,15 +111,15 @@ input[type=text]{width:100%;}
   <div class="qgrid" id="mq"></div>
 
   <div class="divider"><div class="divider-line"></div>
-    <button onclick="toggleDone()" id="done-btn" style="font-size:11px;color:var(--color-text-tertiary);cursor:pointer;background:none;border:.5px solid var(--color-border-tertiary);border-radius:8px;padding:3px 12px;">
+    <button onclick="toggleDone()" id="done-btn" style="font-size:11px;color:var(--color-text-tertiary);cursor:pointer;background:none;border:1px solid var(--border-color);border-radius:8px;padding:4px 12px;">
       แสดงงานที่เสร็จแล้ว
     </button>
   <div class="divider-line"></div></div>
 
   <div id="done-section" class="done-collapse">
-    <div class="sect-title" style="color:#3B6D11;">
+    <div class="sect-title" style="color:#66BB6A;">
       งานที่เสร็จแล้ว
-      <span class="sect-badge" style="background:#EAF3DE;color:#3B6D11;" id="done-count"></span>
+      <span class="sect-badge" style="background:#E8F5E9;color:#66BB6A;" id="done-count"></span>
     </div>
     <div class="qgrid" id="tq-done"></div>
     <div style="height:8px;"></div>
@@ -126,6 +159,7 @@ input[type=text]{width:100%;}
       </tr></thead>
       <tbody id="atb-active"></tbody>
     </table></div>
+    
     <div class="addrow">
       <input type="text" id="an" placeholder="ชื่องาน"/>
       <input type="text" id="aq" placeholder="ปริมาณ"/>
@@ -133,20 +167,20 @@ input[type=text]{width:100%;}
       <select id="am" multiple style="height:28px;"><option>มิลลิ่ง 1</option><option>มิลลิ่ง 2</option><option>กลึง 1</option><option>กลึง 2</option><option>CNC</option></select>
       <select id="aw"><option value="1">เบา</option><option value="2" selected>กลาง</option><option value="3">หนัก</option></select>
       <select id="as"><option value="queue">รอคิว</option><option value="waiting_mat">รอวัสดุ</option><option value="waiting_draw">รอแบบ</option><option value="in_progress">กำลังทำ</option><option value="complete">เสร็จแล้ว</option></select>
-      <button class="btnadd" onclick="addTask()">+ เพิ่ม</button>
+      <button class="btnadd" onclick="addTask()">+ เพิ่มชั่วคราว</button>
     </div>
-    <div style="font-size:10px;color:var(--color-text-tertiary);margin-top:6px;">* กด Ctrl ค้างเพื่อเลือกช่าง/เครื่องหลายอย่าง</div>
+    <div style="font-size:10px;color:#EF5350;margin-top:6px;">* การกดปุ่มเพิ่ม/ลบ ในหน้านี้จะเป็นการจำลองเท่านั้น ข้อมูลจริงต้องแก้ใน Google Sheets</div>
   </div>
 
   <div class="divider"><div class="divider-line"></div>
-    <button onclick="toggleDone2()" id="done-btn2" style="font-size:11px;color:var(--color-text-tertiary);cursor:pointer;background:none;border:.5px solid var(--color-border-tertiary);border-radius:8px;padding:3px 12px;">
+    <button onclick="toggleDone2()" id="done-btn2" style="font-size:11px;color:var(--color-text-tertiary);cursor:pointer;background:none;border:1px solid var(--border-color);border-radius:8px;padding:4px 12px;">
       แสดงงานเสร็จแล้ว
     </button>
   <div class="divider-line"></div></div>
 
   <div id="done-section2" class="done-collapse">
-    <div class="card" style="border-color:#C0DD97;">
-      <div class="sect-title" style="color:#3B6D11;">งานที่เสร็จแล้ว</div>
+    <div class="card" style="border-color:#C8E6C9;">
+      <div class="sect-title" style="color:#66BB6A;">งานที่เสร็จแล้ว</div>
       <div class="tw"><table>
         <thead><tr><th style="width:22px;">#</th><th style="min-width:140px;">งาน</th><th style="width:100px;">ช่าง</th><th style="width:130px;">เครื่องจักร์</th><th style="width:110px;">สถานะ</th><th style="width:22px;"></th></tr></thead>
         <tbody id="atb-done"></tbody>
@@ -158,43 +192,64 @@ input[type=text]{width:100%;}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+// ==========================================
+// 1. ใส่ Link CSV ของ Google Sheets ที่นี่
+// ==========================================
+const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSUf2jrMtxebSMXyPi13i45Eht9OTj1HlfytkiQol2OB7DT6lwk00vBmMdgwGFWfi4JGXU6LHcLBmmY/pubhtml'; 
+
+var tasks = []; // ข้อมูลจะถูกโหลดมาใส่ตัวแปรนี้แทน
+
 var SD={
-  queue:       {label:"รอคิว",     bg:"#F1EFE8",color:"#5F5E5A",dot:"#B4B2A9"},
-  waiting_mat: {label:"รอวัสดุ",   bg:"#FAEEDA",color:"#854F0B",dot:"#EF9F27"},
-  waiting_draw:{label:"รอแบบ",     bg:"#EEEDFE",color:"#534AB7",dot:"#7F77DD"},
-  in_progress: {label:"กำลังทำ",   bg:"#E6F1FB",color:"#185FA5",dot:"#378ADD"},
-  complete:    {label:"เสร็จแล้ว", bg:"#EAF3DE",color:"#3B6D11",dot:"#97C459"},
+  queue:       {label:"รอคิว",     bg:"#F5F5F5", color:"#9E9E9E", dot:"#BDBDBD"},
+  waiting_mat: {label:"รอวัสดุ",   bg:"#FFF9C4", color:"#FBC02D", dot:"#FDD835"},
+  waiting_draw:{label:"รอแบบ",     bg:"#F3E5F5", color:"#AB47BC", dot:"#CE93D8"},
+  in_progress: {label:"กำลังทำ",   bg:"#E3F2FD", color:"#4A90E2", dot:"#64B5F6"},
+  complete:    {label:"เสร็จแล้ว", bg:"#E8F5E9", color:"#66BB6A", dot:"#81C784"},
 };
-var tasks=[
-  {no:1, name:"ทำกรง",                     qty:"1700 EA",techs:["สุทธี","พงพัฒน์","วิทวัส"],machines:["มิลลิ่ง 1","กลึง 1"],           status:"in_progress",w:1},
-  {no:2, name:"Gripper เครื่องกลึงละเอียด",qty:"4 SET",  techs:["พงพัฒน์"],                machines:["มิลลิ่ง 1"],                     status:"complete",   w:2},
-  {no:3, name:"จิกเชื่อม IQ18",             qty:"4 SET",  techs:["นิคม"],                   machines:["มิลลิ่ง 1"],                     status:"complete",   w:2},
-  {no:4, name:"จิกเชื่อม IS22",             qty:"4 SET",  techs:["พงพัฒน์"],                machines:["มิลลิ่ง 1"],                     status:"queue",      w:2},
-  {no:5, name:"จิกเชื่อม IW",               qty:"4 SET",  techs:["นิคม","พงพัฒน์"],         machines:["มิลลิ่ง 1","มิลลิ่ง 2","กลึง 1"],status:"waiting_mat",w:2},
-  {no:6, name:"ทำงานตัวอย่าง IT18",         qty:"1 EA",   techs:["สุทธี"],                  machines:["มิลลิ่ง 1"],                     status:"complete",   w:1},
-  {no:7, name:"จิกตรวจสอบ pin",             qty:"5 EA",   techs:["นิคม","วิทวัส"],          machines:["มิลลิ่ง 2","กลึง 1","CNC"],      status:"complete",   w:3},
-  {no:8, name:"เสาเสียบใบพัด",              qty:"900 EA", techs:["สุทธี","พงพัฒน์"],        machines:["มิลลิ่ง 1","กลึง 2"],            status:"queue",      w:1},
-  {no:9, name:"Jig silk Deco indus",        qty:"1 EA",   techs:["พงพัฒน์","วิทวัส"],       machines:["มิลลิ่ง 1","CNC"],               status:"complete",   w:2},
-  {no:10,name:"jig เครื่องยิง pin",         qty:"1 EA",   techs:["สุทธี"],                  machines:["มิลลิ่ง 1"],                     status:"waiting_draw",w:2},
-  {no:11,name:"jig ประกอบมอเตอร์",          qty:"1 EA",   techs:["นิคม"],                   machines:["มิลลิ่ง 1"],                     status:"complete",   w:2},
-  {no:12,name:"ฐานจิ๊ก silk screen",        qty:"1 EA",   techs:["นิคม"],                   machines:["มิลลิ่ง 1"],                     status:"complete",   w:2},
-  {no:13,name:"เครื่องผสมสี",               qty:"3 MC",   techs:["สุทธี","พงพัฒน์"],        machines:["มิลลิ่ง 1","กลึง 2"],            status:"queue",      w:2},
-  {no:14,name:"เครื่องดัดท่อ",              qty:"1 MC",   techs:["สุทธี"],                  machines:["มิลลิ่ง 1"],                     status:"waiting_mat",w:2},
-  {no:15,name:"กลึงงาน Spare Part",         qty:"8 EA",   techs:["พงพัฒน์"],               machines:["มิลลิ่ง 2"],                     status:"in_progress",w:3},
-  {no:16,name:"งานตัวอย่าง RD IT18",        qty:"2 EA",   techs:["สุทธี"],                  machines:["มิลลิ่ง 1"],                     status:"complete",   w:2},
-  {no:17,name:"JIG ประกอบ IT",              qty:"2 EA",   techs:["นิคม"],                   machines:["มิลลิ่ง 1"],                     status:"queue",      w:2},
-  {no:18,name:"แกนเพลาไฮโดรลิค",           qty:"10 EA",  techs:["วิทวัส"],                 machines:["กลึง 1"],                        status:"complete",   w:2},
-  {no:19,name:"ปลอกรองลูกปืน",             qty:"8 EA",   techs:["วิทวัส"],                 machines:["กลึง 1"],                        status:"complete",   w:2},
-  {no:20,name:"หัวย้ำขามอเตอร์ 10มม",      qty:"10 EA",  techs:["พงพัฒน์","วิทวัส"],       machines:["CNC"],                           status:"queue",      w:2},
-  {no:21,name:"หัวย้ำขามอเตอร์ 12มม",      qty:"10 EA",  techs:["พงพัฒน์","วิทวัส"],       machines:["CNC"],                           status:"queue",      w:2},
-  {no:22,name:"รับมีดเครื่องโม่",           qty:"40 EA",  techs:["นิคม"],                   machines:["มิลลิ่ง 1"],                     status:"complete",   w:1},
-];
+
 var TECHS=["สุทธี","นิคม","พงพัฒน์","วิทวัส","MEM"];
 var MACH=["มิลลิ่ง 1","มิลลิ่ง 2","กลึง 1","กลึง 2","CNC"];
-var TC={"สุทธี":"#378ADD","นิคม":"#1D9E75","พงพัฒน์":"#D85A30","วิทวัส":"#7F77DD","MEM":"#888780"};
-var MC={"มิลลิ่ง 1":"#E24B4A","มิลลิ่ง 2":"#EF9F27","กลึง 1":"#639922","กลึง 2":"#1D9E75","CNC":"#7F77DD"};
-var WT={1:"#3B6D11",2:"#854F0B",3:"#A32D2D"};
+var TC={"สุทธี":"#90CAF9","นิคม":"#A5D6A7","พงพัฒน์":"#FFAB91","วิทวัส":"#B39DDB","MEM":"#CFD8DC"};
+var MC={"มิลลิ่ง 1":"#F48FB1","มิลลิ่ง 2":"#FFCC80","กลึง 1":"#C5E1A5","กลึง 2":"#80CBC4","CNC":"#9FA8DA"};
+var WT={1:"#81C784",2:"#FFB74D",3:"#E57373"};
 var CAP=8; var lChart=null; var activeF="all"; var doneOpen=false; var doneOpen2=false;
+
+// ==========================================
+// ฟังก์ชันโหลดข้อมูลจาก Google Sheets (CSV)
+// ==========================================
+async function loadDataFromCloud() {
+  if (sheetUrl === 'ใส่_LINK_CSV_ที่นี่') {
+    document.getElementById('sumstat').innerHTML = '<div style="grid-column: span 4; text-align: center; padding: 20px; color: #EF5350;">กรุณาใส่ Link CSV ของ Google Sheets ในโค้ด (บรรทัดที่ 185)</div>';
+    return;
+  }
+  try {
+    const response = await fetch(sheetUrl);
+    const data = await response.text();
+    
+    // แปลง CSV เป็น Array
+    const rows = data.split('\n').map(row => row.trim()).filter(row => row.length > 0);
+    const dataRows = rows.slice(1); // ตัดหัวข้อ (Header) ทิ้ง
+    
+    tasks = dataRows.map(row => {
+      const cols = row.split(','); // แยกคอลัมน์ด้วยลูกน้ำ
+      return {
+        no: parseInt(cols[0]),
+        name: cols[1],
+        qty: cols[2],
+        techs: cols[3] ? cols[3].split('|').filter(x=>x) : [], // ใช้ | คั่นชื่อช่าง
+        machines: cols[4] ? cols[4].split('|').filter(x=>x) : [],
+        status: cols[5] ? cols[5].trim() : 'queue',
+        w: parseInt(cols[6]) || 1
+      };
+    });
+    
+    rAll(); // โหลดเสร็จแล้วสั่งวาดหน้าจอ
+  } catch (error) {
+    console.error("โหลดข้อมูลไม่สำเร็จ:", error);
+    document.getElementById('sumstat').innerHTML = '<div style="grid-column: span 4; text-align: center; padding: 20px; color: #EF5350;">โหลดข้อมูลล้มเหลว ตรวจสอบสิทธิ์การเข้าถึง Google Sheets (ต้อง Publish to web)</div>';
+  }
+}
+
 
 function isDone(t){return t.status==='complete';}
 function stag(s){var d=SD[s]||SD.queue;return '<span class="stag" style="background:'+d.bg+';color:'+d.color+';">'+d.label+'</span>';}
@@ -213,10 +268,10 @@ function buildQCard(entity,col,mine,doneOnly){
     return '<div class="qi'+(doneOnly?' done-item':'')+'"><div class="dot" style="background:'+sd.dot+';"></div><span class="qiname">'+t.name+'</span>'+stag(t.status)+'</div>';
   }).join('');
   var pend=mine.filter(function(t){return !isDone(t);}).length;
-  var bb=doneOnly?'#EAF3DE':col+'22'; var bc=doneOnly?'#3B6D11':col;
+  var bb=doneOnly?'#E8F5E9':col+'22'; var bc=doneOnly?'#2E7D32':col;
   var btext=doneOnly?mine.length+' งาน':pend+' รอ / '+mine.length;
   var d=document.createElement('div'); d.className='qc'+(doneOnly?' done-card':'');
-  d.innerHTML='<div class="qh" style="background:'+col+'18;border-bottom:.5px solid '+col+'33;"><span class="qhname" style="color:'+col+';">'+entity+'</span><span class="qbadge" style="background:'+bb+';color:'+bc+';">'+btext+'</span></div><div class="qbody">'+items+'</div>';
+  d.innerHTML='<div class="qh" style="background:'+col+'18;border-bottom:1px solid '+col+'33;"><span class="qhname" style="color:'+col+';">'+entity+'</span><span class="qbadge" style="background:'+bb+';color:'+bc+';">'+btext+'</span></div><div class="qbody" style="padding-top:8px;">'+items+'</div>';
   return d;
 }
 
@@ -241,7 +296,7 @@ function rQueue(){
     var over=m.indexOf('มิลลิ่ง')>=0&&active.length>4;
     if(active.length){
       var c=buildQCard(m+(over?' ⚠':''),col,active,false);
-      if(c){if(over){c.querySelector('.qbadge').style.background='#FCEBEB';c.querySelector('.qbadge').style.color='#A32D2D';}mq.appendChild(c);}
+      if(c){if(over){c.querySelector('.qbadge').style.background='#FFEBEE';c.querySelector('.qbadge').style.color='#EF5350';}mq.appendChild(c);}
     }
     if(done.length){var c=buildQCard(m,col,done,true);if(c)mqd.appendChild(c);}
   });
@@ -252,9 +307,9 @@ function rQueue(){
   var wt=tasks.filter(function(t){return t.status==='waiting_mat'||t.status==='waiting_draw';}).length;
   document.getElementById('sumstat').innerHTML=
     '<div class="stat"><div class="stat-label">งานทั้งหมด</div><div class="stat-val">'+total+'</div></div>'+
-    '<div class="stat" style="background:#E6F1FB;"><div class="stat-label" style="color:#185FA5;">กำลังทำ</div><div class="stat-val" style="color:#185FA5;">'+ip+'</div></div>'+
-    '<div class="stat" style="background:#FAEEDA;"><div class="stat-label" style="color:#854F0B;">รอ/ติดขัด</div><div class="stat-val" style="color:#854F0B;">'+wt+'</div></div>'+
-    '<div class="stat" style="background:#EAF3DE;"><div class="stat-label" style="color:#3B6D11;">เสร็จแล้ว</div><div class="stat-val" style="color:#3B6D11;">'+doneCnt+'</div></div>';
+    '<div class="stat" style="background:#E3F2FD; border-color:#BBDEFB;"><div class="stat-label" style="color:#1976D2;">กำลังทำ</div><div class="stat-val" style="color:#1976D2;">'+ip+'</div></div>'+
+    '<div class="stat" style="background:#FFF9C4; border-color:#FFF59D;"><div class="stat-label" style="color:#F57F17;">รอ/ติดขัด</div><div class="stat-val" style="color:#F57F17;">'+wt+'</div></div>'+
+    '<div class="stat" style="background:#E8F5E9; border-color:#C8E6C9;"><div class="stat-label" style="color:#2E7D32;">เสร็จแล้ว</div><div class="stat-val" style="color:#2E7D32;">'+doneCnt+'</div></div>';
   document.getElementById('tech-active-count').textContent=tasks.filter(function(t){return !isDone(t);}).length+' งานรอ';
   document.getElementById('done-count').textContent=doneCnt+' งาน';
 }
@@ -263,8 +318,8 @@ function rLoad(){
   var mill=tasks.filter(function(t){return t.machines.some(function(m){return m.indexOf('มิลลิ่ง')>=0;});});
   var total=mill.reduce(function(s,t){return s+t.w;},0);
   var avg=total/2;var pct=Math.round(avg/CAP*100);
-  var colA=pct>100?"#E24B4A":pct>70?"#EF9F27":"#1D9E75";
-  var colT=total>CAP*2?"#E24B4A":"#378ADD";
+  var colA=pct>100?"#EF5350":pct>70?"#FFB74D":"#81C784";
+  var colT=total>CAP*2?"#EF5350":"#64B5F6";
   var bT=Math.min(100,Math.round(total/(CAP*4)*100));
   var bA=Math.min(100,Math.round(avg/CAP*100));
   var tP=Math.round(total/(CAP*2)*100);
@@ -275,16 +330,16 @@ function rLoad(){
   var o1=Math.max(0,total-CAP*2),n1=Math.min(total,CAP*2),oA=Math.max(0,avg-CAP),nA=Math.min(avg,CAP);
   lChart=new Chart(document.getElementById('lc'),{type:'bar',
     data:{labels:['โหลดรวม','เฉลี่ย/เครื่อง','ขีดจำกัด'],datasets:[
-      {data:[n1,nA,CAP],backgroundColor:['#378ADD','#1D9E75','#B5D4F4'],borderRadius:4,borderSkipped:false},
-      {data:[o1,oA,0],backgroundColor:['#E24B4A','#E24B4A','transparent'],borderRadius:4,borderSkipped:false}
+      {data:[n1,nA,CAP],backgroundColor:['#90CAF9','#A5D6A7','#E0E0E0'],borderRadius:4,borderSkipped:false},
+      {data:[o1,oA,0],backgroundColor:['#EF5350','#EF5350','transparent'],borderRadius:4,borderSkipped:false}
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{ticks:{color:'#888780',font:{size:11}},grid:{display:false}},y:{ticks:{color:'#888780',font:{size:11},stepSize:4},grid:{color:'rgba(0,0,0,0.05)'}}},animation:{duration:200}}
+      scales:{x:{ticks:{color:'#9E9E9E',font:{size:11}},grid:{display:false}},y:{ticks:{color:'#9E9E9E',font:{size:11},stepSize:4},grid:{color:'rgba(0,0,0,0.05)'}}},animation:{duration:200}}
   });
   var need=Math.max(0,Math.ceil(avg/CAP)-1);
-  var bg=pct>100?"#FAEEDA":"#EAF3DE";var c2=pct>100?"#791F1F":"#3B6D11";
+  var bg=pct>100?"#FFEBEE":"#E8F5E9";var c2=pct>100?"#C62828":"#2E7D32";
   var ls=document.getElementById('ls');ls.style.background=bg;
-  ls.innerHTML='<strong style="color:'+c2+';">สรุป:</strong> โหลดรวม = <strong>'+total+' pts</strong> | เฉลี่ย = <strong>'+avg.toFixed(1)+' pts/เครื่อง</strong> ('+pct+'%)'+(pct>100?' → <strong style="color:#A32D2D;">เกิน '+(pct-100)+'% — ต้องการเครื่องเพิ่ม '+need+' เครื่อง</strong>':' → <strong style="color:#3B6D11;">2 เครื่องรับไหวถ้าแบ่งงานสมดุล</strong>');
+  ls.innerHTML='<strong style="color:'+c2+';">สรุป:</strong> โหลดรวม = <strong>'+total+' pts</strong> | เฉลี่ย = <strong>'+avg.toFixed(1)+' pts/เครื่อง</strong> ('+pct+'%)'+(pct>100?' → <strong style="color:#C62828;">เกิน '+(pct-100)+'% — ต้องการเครื่องเพิ่ม '+need+' เครื่อง</strong>':' → <strong style="color:#2E7D32;">2 เครื่องรับไหวถ้าแบ่งงานสมดุล</strong>');
   var tb=document.getElementById('mtb');tb.innerHTML='';
   mill.forEach(function(t){
     var idx=tasks.indexOf(t);var tr=document.createElement('tr');
@@ -294,8 +349,8 @@ function rLoad(){
       '<option '+(t.machines.indexOf('มิลลิ่ง 2')>=0&&t.machines.indexOf('มิลลิ่ง 1')<0?'selected':'')+'>มิลลิ่ง 2</option>'+
       '<option '+(t.machines.indexOf('มิลลิ่ง 1')>=0&&t.machines.indexOf('มิลลิ่ง 2')>=0?'selected':'')+'>มิลลิ่ง 1+2</option></select></td>'+
       '<td><select onchange="tasks['+idx+'].w=+this.value;rAll();"><option value="1" '+(t.w===1?'selected':'')+'>เบา (1)</option><option value="2" '+(t.w===2?'selected':'')+'>กลาง (2)</option><option value="3" '+(t.w===3?'selected':'')+'>หนัก (3)</option></select></td>'+
-      '<td style="text-align:center;font-size:12px;font-weight:500;color:'+WT[t.w]+';">'+t.w+'</td>'+
-      '<td><button class="btndel" onclick="tasks.splice('+idx+',1);rAll();">×</button></td>';
+      '<td style="text-align:center;font-size:12px;font-weight:600;color:'+WT[t.w]+';">'+t.w+'</td>'+
+      '<td><button class="btndel" onclick="tasks.splice('+idx+',1);rAll();" title="ลบแค่หน้าจอ">×</button></td>';
     tb.appendChild(tr);
   });
 }
@@ -324,12 +379,12 @@ function rAll2(){
     var mc=t.machines.length?t.machines.map(function(x){return '<span class="cpg">'+x+'</span>';}).join(''):'<span style="color:var(--color-text-tertiary);font-size:11px;">—</span>';
     var sOpts=Object.keys(SD).map(function(k){return '<option value="'+k+'" '+(t.status===k?'selected':'')+'>'+SD[k].label+'</option>';}).join('');
     tr.innerHTML='<td style="color:var(--color-text-tertiary);font-size:11px;">'+t.no+'</td>'+
-      '<td style="font-size:12px;color:var(--color-text-primary);">'+t.name+' <span style="color:var(--color-text-tertiary);font-size:10px;">'+t.qty+'</span></td>'+
+      '<td style="font-size:12px;color:var(--color-text-primary);font-weight:500;">'+t.name+' <span style="color:var(--color-text-tertiary);font-size:10px;font-weight:normal;">'+t.qty+'</span></td>'+
       '<td><div class="chips">'+tc+'</div></td>'+
       '<td><div class="chips">'+mc+'</div></td>'+
       '<td><select onchange="tasks['+idx+'].status=this.value;rAll();" style="width:100%;">'+sOpts+'</select></td>'+
       '<td style="text-align:center;">'+stag(t.status)+'</td>'+
-      '<td><button class="btndel" onclick="tasks.splice('+idx+',1);rAll();">×</button></td>';
+      '<td><button class="btndel" onclick="tasks.splice('+idx+',1);rAll();" title="ลบแค่หน้าจอ">×</button></td>';
     return tr;
   }
 
@@ -346,9 +401,16 @@ function addTask(){
   var techs=Array.from(document.getElementById('at').options).filter(function(o){return o.selected;}).map(function(o){return o.value;});
   var machines=Array.from(document.getElementById('am').options).filter(function(o){return o.selected;}).map(function(o){return o.value;});
   tasks.push({no:tasks.length+1,name:name,qty:document.getElementById('aq').value||'—',techs:techs,machines:machines,status:document.getElementById('as').value,w:+document.getElementById('aw').value});
-  document.getElementById('an').value='';document.getElementById('aq').value='';rAll();
+  document.getElementById('an').value='';document.getElementById('aq').value='';
+  rAll();
+  alert('เพิ่มงานบนหน้าจอสำเร็จ! (แต่จะยังไม่ถูกบันทึกลง Google Sheets นะครับ หากรีเฟรชหน้าต่างข้อมูลจะกลับไปอิงตาม Google Sheets)');
 }
 
 function rAll(){rQueue();rLoad();rAll2();}
-rAll();
+
+// สั่งโหลดข้อมูลจากคลาวด์ตอนเปิดเว็บ
+window.onload = loadDataFromCloud;
+
 </script>
+</body>
+</html>
